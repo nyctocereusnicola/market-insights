@@ -35,10 +35,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .lang-btn { border: none; background: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all .2s; white-space: nowrap; }
 .lang-btn.active { background: var(--card); color: var(--primary); font-weight: 600; box-shadow: var(--shadow); }
 .lang-btn:hover:not(.active) { color: var(--text); }
-.admin-btn { border: 1px solid var(--border); background: var(--card); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all .2s; }
-.admin-btn:hover { border-color: var(--primary); color: var(--primary); }
-.admin-btn.logged-in { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
-
 .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 24px 0; }
 .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
 .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
@@ -81,7 +77,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .badge-C { background: #fee2e2; color: #991b1b; }
 .view-btn { border: 1px solid var(--primary); color: var(--primary); background: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .2s; }
 .view-btn:hover { background: var(--primary); color: #fff; }
-.view-btn.requested { border-color: var(--yellow); color: var(--yellow); }
 .view-btn.approved { background: var(--green); border-color: var(--green); color: #fff; }
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
@@ -102,23 +97,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .btn-success { background: var(--green); color: #fff; }
 .modal .error { color: var(--red); font-size: 13px; margin-top: -8px; margin-bottom: 8px; display: none; }
 
-.update-bar { display: none; background: var(--primary-light); border-radius: var(--radius); padding: 12px 20px; margin-bottom: 16px; align-items: center; justify-content: space-between; }
-.update-bar.show { display: flex; }
+.update-bar { display: flex; background: var(--primary-light); border-radius: var(--radius); padding: 12px 20px; margin-bottom: 16px; align-items: center; justify-content: space-between; }
 .update-bar .info { font-size: 13px; color: var(--primary); }
 #updateBtn { padding: 8px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
 #updateBtn:disabled { opacity: .6; cursor: not-allowed; }
 .update-msg { font-size: 12px; color: var(--text-secondary); }
-
-.review-panel { display: none; background: var(--card); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
-.review-panel.show { display: block; }
-.review-panel h4 { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
-.review-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.review-item:last-child { border-bottom: none; }
-.review-info { font-size: 13px; }
-.review-actions { display: flex; gap: 6px; }
-.review-actions button { padding: 4px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; }
-.btn-approve { background: var(--green); color: #fff; }
-.btn-reject { background: var(--red); color: #fff; }
 
 @media (max-width: 768px) {
   .stats { grid-template-columns: repeat(2,1fr); }
@@ -138,23 +121,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <button class="lang-btn" onclick="setLang('zh-TW')">繁</button>
         <button class="lang-btn" onclick="setLang('en')">EN</button>
       </div>
-      <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()" data-i18n="adminLogin">🔑 管理登入</button>
     </div>
   </div>
 </div>
 
 <div class="container">
-  <div class="update-bar" id="updateBar">
+  <div class="update-bar">
     <div>
-      <div class="info" data-i18n="updateInfo">管理模式下可手动触发数据更新</div>
+      <div class="info" data-i18n="updateHint">点击按钮手动触发数据更新</div>
       <div class="update-msg" id="updateMsg" data-i18n="lastUpdate">上次更新：--</div>
     </div>
     <button id="updateBtn" onclick="triggerUpdate()" data-i18n="updateNow">🔄 更新数据</button>
-  </div>
-
-  <div class="review-panel" id="reviewPanel">
-    <h4 data-i18n="pendingReviews">⏳ 待审核查看申请</h4>
-    <div id="reviewList"><span style="color:var(--text-secondary);font-size:13px" data-i18n="noPending">暂无待审核申请</span></div>
   </div>
 
   <div class="stats">
@@ -208,29 +185,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 </div>
 
-<div class="modal-overlay" id="loginModal">
-  <div class="modal">
-    <h3 data-i18n="adminLogin">管理员登入</h3>
-    <input type="password" id="pwdInput" placeholder="请输入管理密码" data-i18n-placeholder="pwdPlaceholder" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="error" id="loginError" data-i18n="wrongPwd">密码错误</div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeLogin()" data-i18n="cancel">取消</button>
-      <button class="btn btn-primary" onclick="doLogin()" data-i18n="login">登入</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="viewModal">
-  <div class="modal">
-    <h3 id="viewTitle">--</h3>
-    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px" id="viewSource">--</p>
-    <p style="font-size:14px" id="viewMsg" data-i18n="viewRequestMsg">此报告链接需管理者授权查看。已为你发送查看申请，请等待管理者审核。</p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeView()" data-i18n="close">关闭</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ============================================================
 // DATA (auto-generated by pipeline — DO NOT EDIT)
@@ -243,67 +197,47 @@ const SITE_DATA = __SITE_DATA_PLACEHOLDER__;
 const I18N = {
   'zh-CN': {
     siteTitle: '市场洞察报告库', siteSub: '',
-    adminLogin: '🔑 管理登入', adminLogout: '🔓 退出管理',
     totalReports: '报告总数', aGrade: 'A级报告', industries: '覆盖行业', latestReport: '最新报告',
     filterIndustry: '行业筛选', filterQuality: '品质筛选', industryDist: '行业分布',
     showing: '显示', reports: '份报告',
     colReport: '报告', colIndustry: '行业', colQuality: '品质', colDate: '日期',
     noData: '暂无报告数据', searchPlaceholder: '搜索报告标题、标签、品牌...',
-    all: '全部', view: '查看', requested: '已申请', approved: '已授权',
-    updateInfo: '管理模式下可手动触发数据更新', updateNow: '🔄 更新数据', lastUpdate: '上次更新：',
+    all: '全部', view: '查看',
+    updateHint: '点击按钮手动触发数据更新', updateNow: '🔄 更新数据', lastUpdate: '上次更新：',
     updating: '更新中...', updateDone: '✅ 更新完成！页面即将刷新', updateFail: '❌ 更新失败，请稍后重试',
-    pendingReviews: '⏳ 待审核查看申请', noPending: '暂无待审核申请',
-    approve: '批准', reject: '拒绝',
-    pwdPlaceholder: '请输入管理密码', login: '登入', cancel: '取消', close: '关闭',
-    wrongPwd: '密码错误',
-    viewRequestMsg: '此报告链接需管理者授权查看。已为你发送查看申请，请等待管理者审核。',
     aPct: '占比',
   },
   'zh-TW': {
     siteTitle: '市場洞察報告庫', siteSub: '',
-    adminLogin: '🔑 管理登入', adminLogout: '🔓 退出管理',
     totalReports: '報告總數', aGrade: 'A級報告', industries: '覆蓋行業', latestReport: '最新報告',
     filterIndustry: '行業篩選', filterQuality: '品質篩選', industryDist: '行業分佈',
     showing: '顯示', reports: '份報告',
     colReport: '報告', colIndustry: '行業', colQuality: '品質', colDate: '日期',
     noData: '暫無報告數據', searchPlaceholder: '搜索報告標題、標籤、品牌...',
-    all: '全部', view: '查看', requested: '已申請', approved: '已授權',
-    updateInfo: '管理模式下可手動觸發數據更新', updateNow: '🔄 更新數據', lastUpdate: '上次更新：',
+    all: '全部', view: '查看',
+    updateHint: '點擊按鈕手動觸發數據更新', updateNow: '🔄 更新數據', lastUpdate: '上次更新：',
     updating: '更新中...', updateDone: '✅ 更新完成！頁面即將刷新', updateFail: '❌ 更新失敗，請稍後重試',
-    pendingReviews: '⏳ 待審核查看申請', noPending: '暫無待審核申請',
-    approve: '批准', reject: '拒絕',
-    pwdPlaceholder: '請輸入管理密碼', login: '登入', cancel: '取消', close: '關閉',
-    wrongPwd: '密碼錯誤',
-    viewRequestMsg: '此報告連結需管理者授權查看。已為你發送查看申請，請等待管理者審核。',
     aPct: '佔比',
   },
   'en': {
     siteTitle: 'Market Insights Library', siteSub: '',
-    adminLogin: '🔑 Admin', adminLogout: '🔓 Logout',
     totalReports: 'Total Reports', aGrade: 'Grade A', industries: 'Industries', latestReport: 'Latest Report',
     filterIndustry: 'Industry', filterQuality: 'Quality', industryDist: 'Distribution',
     showing: 'Showing', reports: 'reports',
     colReport: 'Report', colIndustry: 'Industry', colQuality: 'Quality', colDate: 'Date',
     noData: 'No reports available', searchPlaceholder: 'Search title, tags, brands...',
-    all: 'All', view: 'View', requested: 'Requested', approved: 'Approved',
-    updateInfo: 'You can manually trigger data update in admin mode', updateNow: '🔄 Update Data', lastUpdate: 'Last updated: ',
+    all: 'All', view: 'View',
+    updateHint: 'Click to manually trigger data update', updateNow: '🔄 Update Data', lastUpdate: 'Last updated: ',
     updating: 'Updating...', updateDone: '✅ Updated! Page will refresh', updateFail: '❌ Update failed, please retry',
-    pendingReviews: '⏳ Pending View Requests', noPending: 'No pending requests',
-    approve: 'Approve', reject: 'Reject',
-    pwdPlaceholder: 'Enter admin password', login: 'Login', cancel: 'Cancel', close: 'Close',
-    wrongPwd: 'Incorrect password',
-    viewRequestMsg: 'This report requires admin authorization to view. A request has been sent. Please wait for approval.',
     aPct: 'ratio',
   }
 };
 
 let currentLang = 'zh-CN';
-let isAdmin = false;
 let reports = [];
 let activeIndustry = '全部';
 let activeQuality = '全部';
 let searchTerm = '';
-let viewRequests = [];
 
 function t(key) { return (I18N[currentLang] || I18N['zh-CN'])[key] || key; }
 
@@ -318,43 +252,7 @@ function setLang(lang) {
   renderAll();
 }
 
-function toggleAdmin() {
-  if (isAdmin) { isAdmin = false; updateAdminUI(); return; }
-  document.getElementById('loginModal').classList.add('show');
-  document.getElementById('pwdInput').value = '';
-  document.getElementById('loginError').style.display = 'none';
-  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
-}
-
-function closeLogin() { document.getElementById('loginModal').classList.remove('show'); }
-
-async function doLogin() {
-  const pwd = document.getElementById('pwdInput').value;
-  const hash = await sha256(pwd);
-  const expected = SITE_DATA.config.adminPwdHash || '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
-  if (hash === expected) {
-    isAdmin = true; updateAdminUI(); closeLogin();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-  }
-}
-
-async function sha256(msg) {
-  const buf = new TextEncoder().encode(msg);
-  const h = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-function updateAdminUI() {
-  const btn = document.getElementById('adminBtn');
-  btn.textContent = isAdmin ? t('adminLogout') : t('adminLogin');
-  btn.classList.toggle('logged-in', isAdmin);
-  document.getElementById('updateBar').classList.toggle('show', isAdmin);
-  document.getElementById('reviewPanel').classList.toggle('show', isAdmin);
-  if (isAdmin) renderReviews();
-}
-
-async function triggerUpdate() {
+function triggerUpdate() {
   const btn = document.getElementById('updateBtn');
   const msg = document.getElementById('updateMsg');
   const url = SITE_DATA.config.triggerUrl;
@@ -367,43 +265,6 @@ async function triggerUpdate() {
     else { msg.textContent = t('updateFail'); }
   } catch(e) { msg.textContent = t('updateFail'); }
   btn.disabled = false; btn.textContent = '🔄 ' + t('updateNow');
-}
-
-function requestView(reportId) {
-  const r = reports.find(rp => rp.id === reportId);
-  document.getElementById('viewTitle').textContent = r ? r.title : '';
-  document.getElementById('viewSource').textContent = r ? (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') : '';
-  document.getElementById('viewModal').classList.add('show');
-  const exists = viewRequests.find(v => v.id === reportId);
-  if (!exists) {
-    viewRequests.push({ id: reportId, time: new Date().toISOString(), status: 'pending' });
-    saveRequests();
-    if (isAdmin) renderReviews();
-    renderAll();
-  }
-}
-
-function closeView() { document.getElementById('viewModal').classList.remove('show'); }
-
-function approveRequest(idx) { viewRequests[idx].status = 'approved'; saveRequests(); renderReviews(); renderAll(); }
-function rejectRequest(idx) { viewRequests[idx].status = 'rejected'; saveRequests(); renderReviews(); renderAll(); }
-
-function saveRequests() { localStorage.setItem('view_requests', JSON.stringify(viewRequests)); }
-function loadRequests() { try { viewRequests = JSON.parse(localStorage.getItem('view_requests')||'[]'); } catch(e) { viewRequests = []; } }
-
-function renderReviews() {
-  const list = document.getElementById('reviewList');
-  const pending = viewRequests.filter(r => r.status === 'pending');
-  if (pending.length === 0) {
-    list.innerHTML = '<span style="color:var(--text-secondary);font-size:13px">' + t('noPending') + '</span>';
-    return;
-  }
-  list.innerHTML = pending.map((r, i) => {
-    const report = reports.find(rp => rp.id === r.id);
-    const title = report ? report.title : r.id;
-    const globIdx = viewRequests.indexOf(r);
-    return '<div class="review-item"><div class="review-info"><strong>' + title + '</strong><br><span style="font-size:11px;color:var(--text-secondary)">' + new Date(r.time).toLocaleString() + '</span></div><div class="review-actions"><button class="btn-approve" onclick="approveRequest(' + globIdx + ')">' + t('approve') + '</button><button class="btn-reject" onclick="rejectRequest(' + globIdx + ')">' + t('reject') + '</button></div></div>';
-  }).join('');
 }
 
 function fmtDate(ts) {
@@ -455,11 +316,6 @@ function renderAll() {
     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>' + t('noData') + '</div></div>';
   } else {
     list.innerHTML = filtered.map(r => {
-      const isReq = viewRequests.find(v => v.id === r.id);
-      const isApproved = isReq && isReq.status === 'approved';
-      let cls = 'view-btn', txt = t('view');
-      if (isApproved) { cls += ' approved'; txt = t('approved'); }
-      else if (isReq && isReq.status === 'pending') { cls += ' requested'; txt = t('requested'); }
       // Generate feishu file link
       let link = '';
       if (typeof r.file_link === 'string' && r.file_link) link = r.file_link;
@@ -467,23 +323,21 @@ function renderAll() {
       // Summary snippet
       const summarySnippet = (r.summary || '').substring(0, 120) + ((r.summary||'').length > 120 ? '...' : '');
       const summaryHtml = summarySnippet ? '<div class="col-summary">' + summarySnippet + '</div>' : '';
-      // If approved and has link, make it a real link; otherwise show request dialog
-      if (isApproved && link) {
-        return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div>' + summaryHtml + '</div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><a href="' + link + '" target="_blank" class="view-btn approved" style="text-decoration:none">🔗 ' + t('approved') + '</a></div></div>';
-      }
-      return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div>' + summaryHtml + '</div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><button class="' + cls + '" onclick="requestView(\'' + r.id + '\')">' + txt + '</button></div></div>';
+      // All reports with a link → direct Feishu link
+      const viewHtml = link
+        ? '<a href="' + link + '" target="_blank" class="view-btn approved" style="text-decoration:none">🔗 ' + t('view') + '</a>'
+        : '<span style="font-size:12px;color:var(--text-secondary)">--</span>';
+      return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div>' + summaryHtml + '</div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div>' + viewHtml + '</div></div>';
     }).join('');
   }
 
-  if (isAdmin && SITE_DATA.config.lastUpdated) {
+  if (SITE_DATA.config.lastUpdated) {
     document.getElementById('updateMsg').textContent = t('lastUpdate') + SITE_DATA.config.lastUpdated;
   }
 }
 
 function init() {
-  loadRequests();
   reports = SITE_DATA.reports || [];
-  if (!SITE_DATA.config.adminPwdHash) SITE_DATA.config.adminPwdHash = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
   renderAll();
 }
 
