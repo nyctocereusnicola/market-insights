@@ -74,6 +74,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .table-row:last-child { border-bottom: none; }
 .col-title { font-weight: 600; color: var(--text); }
 .col-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.col-summary { font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
 .badge-A { background: #d1fae5; color: #065f46; }
 .badge-B { background: #fef3c7; color: #92400e; }
@@ -305,7 +306,7 @@ const SITE_DATA = {
   ],
   "config": {
     "triggerUrl": "https://cassette-orbit-enclosure-aspect.trycloudflare.com/api/update",
-    "lastUpdated": "2026-05-21 17:28",
+    "lastUpdated": "2026-05-21 17:57",
     "adminPwdHash": "9e17eb0c814531c12d060d1df16a868983d0fdca3adef4e0ec3f2b37f9218b50"
   }
 };
@@ -537,11 +538,14 @@ function renderAll() {
       let link = '';
       if (typeof r.file_link === 'string' && r.file_link) link = r.file_link;
       else if (typeof r.file_link === 'object' && r.file_link && r.file_link.link) link = r.file_link.link;
+      // Summary snippet
+      const summarySnippet = (r.summary || '').substring(0, 120) + ((r.summary||'').length > 120 ? '...' : '');
+      const summaryHtml = summarySnippet ? '<div class="col-summary">' + summarySnippet + '</div>' : '';
       // If approved and has link, make it a real link; otherwise show request dialog
       if (isApproved && link) {
-        return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div></div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><a href="' + link + '" target="_blank" class="view-btn approved" style="text-decoration:none">🔗 ' + t('approved') + '</a></div></div>';
+        return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div>' + summaryHtml + '</div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><a href="' + link + '" target="_blank" class="view-btn approved" style="text-decoration:none">🔗 ' + t('approved') + '</a></div></div>';
       }
-      return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div></div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><button class="' + cls + '" onclick="requestView(\'' + r.id + '\')">' + txt + '</button></div></div>';
+      return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div>' + summaryHtml + '</div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><button class="' + cls + '" onclick="requestView(\'' + r.id + '\')">' + txt + '</button></div></div>';
     }).join('');
   }
 
