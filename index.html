@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Insights Library</title>
+<style>
+:root {
+  --bg: #f0f2f5;
+  --card: #fff;
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --accent: #0ea5e9;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.1);
+  --radius: 10px;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --tag-bg: #f1f5f9;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 0; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 20px; font-weight: 700; color: var(--primary); letter-spacing: -.5px; }
+.logo span { color: var(--text-secondary); font-weight: 400; font-size: 14px; margin-left: 8px; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.lang-switch { display: flex; gap: 4px; background: var(--tag-bg); border-radius: 8px; padding: 2px; }
+.lang-btn { border: none; background: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all .2s; white-space: nowrap; }
+.lang-btn.active { background: var(--card); color: var(--primary); font-weight: 600; box-shadow: var(--shadow); }
+.lang-btn:hover:not(.active) { color: var(--text); }
+.admin-btn { border: 1px solid var(--border); background: var(--card); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all .2s; }
+.admin-btn:hover { border-color: var(--primary); color: var(--primary); }
+.admin-btn.logged-in { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 24px 0; }
+.stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.panels { display: grid; grid-template-columns: 1fr 300px; gap: 16px; margin-bottom: 24px; }
+@media (max-width: 768px) { .panels { grid-template-columns: 1fr; } }
+
+.filter-panel { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.filter-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.chip { border: 1px solid var(--border); background: none; padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all .2s; }
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.search-box { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color .2s; }
+.search-box:focus { border-color: var(--primary); }
+
+.chart-panel { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.chart-bars { display: flex; flex-direction: column; gap: 8px; }
+.chart-row { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background .15s; }
+.chart-row:hover { background: var(--tag-bg); }
+.chart-row.active { background: var(--primary-light); }
+.chart-label { width: 70px; font-size: 12px; color: var(--text-secondary); text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chart-bar-wrap { flex: 1; height: 22px; background: var(--tag-bg); border-radius: 4px; overflow: hidden; }
+.chart-bar { height: 100%; background: var(--primary); border-radius: 4px; transition: width .3s; min-width: 2px; }
+.chart-count { font-size: 12px; font-weight: 600; color: var(--text); width: 30px; text-align: left; flex-shrink: 0; }
+
+.table-wrap { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.table-header { display: grid; grid-template-columns: 1fr 120px 80px 100px 80px; gap: 16px; padding: 14px 20px; background: var(--tag-bg); font-size: 13px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.table-row { display: grid; grid-template-columns: 1fr 120px 80px 100px 80px; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); align-items: center; transition: background .15s; }
+.table-row:hover { background: #fafbfc; }
+.table-row:last-child { border-bottom: none; }
+.col-title { font-weight: 600; color: var(--text); }
+.col-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge-A { background: #d1fae5; color: #065f46; }
+.badge-B { background: #fef3c7; color: #92400e; }
+.badge-C { background: #fee2e2; color: #991b1b; }
+.view-btn { border: 1px solid var(--primary); color: var(--primary); background: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .2s; }
+.view-btn:hover { background: var(--primary); color: #fff; }
+.view-btn.requested { border-color: var(--yellow); color: var(--yellow); }
+.view-btn.approved { background: var(--green); border-color: var(--green); color: #fff; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; box-shadow: var(--shadow-lg); }
+.modal h3 { font-size: 18px; margin-bottom: 16px; }
+.modal input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; }
+.modal input:focus { border-color: var(--primary); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.btn { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: all .2s; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { opacity: .9; }
+.btn-secondary { background: var(--tag-bg); color: var(--text); }
+.btn-secondary:hover { background: var(--border); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-success { background: var(--green); color: #fff; }
+.modal .error { color: var(--red); font-size: 13px; margin-top: -8px; margin-bottom: 8px; display: none; }
+
+.update-bar { display: none; background: var(--primary-light); border-radius: var(--radius); padding: 12px 20px; margin-bottom: 16px; align-items: center; justify-content: space-between; }
+.update-bar.show { display: flex; }
+.update-bar .info { font-size: 13px; color: var(--primary); }
+#updateBtn { padding: 8px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+#updateBtn:disabled { opacity: .6; cursor: not-allowed; }
+.update-msg { font-size: 12px; color: var(--text-secondary); }
+
+.review-panel { display: none; background: var(--card); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.review-panel.show { display: block; }
+.review-panel h4 { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.review-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.review-item:last-child { border-bottom: none; }
+.review-info { font-size: 13px; }
+.review-actions { display: flex; gap: 6px; }
+.review-actions button { padding: 4px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; }
+.btn-approve { background: var(--green); color: #fff; }
+.btn-reject { background: var(--red); color: #fff; }
+
+@media (max-width: 768px) {
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .table-header, .table-row { grid-template-columns: 1fr 60px 60px 60px; }
+  .table-header .col-industry, .table-row .col-industry { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container header-inner">
+    <div class="logo" data-i18n="siteTitle">Market Insights Library</div>
+    <div class="header-actions">
+      <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('zh-CN')">简</button>
+        <button class="lang-btn" onclick="setLang('zh-TW')">繁</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()" data-i18n="adminLogin">🔑 管理登入</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="update-bar" id="updateBar">
+    <div>
+      <div class="info" data-i18n="updateInfo">管理模式下可手动触发数据更新</div>
+      <div class="update-msg" id="updateMsg" data-i18n="lastUpdate">上次更新：--</div>
+    </div>
+    <button id="updateBtn" onclick="triggerUpdate()" data-i18n="updateNow">🔄 更新数据</button>
+  </div>
+
+  <div class="review-panel" id="reviewPanel">
+    <h4 data-i18n="pendingReviews">⏳ 待审核查看申请</h4>
+    <div id="reviewList"><span style="color:var(--text-secondary);font-size:13px" data-i18n="noPending">暂无待审核申请</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="totalReports">报告总数</div>
+      <div class="stat-value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="aGrade">A级报告</div>
+      <div class="stat-value" id="statA" style="color:var(--green)">0</div>
+      <div class="stat-sub" id="statAPct"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="industries">覆盖行业</div>
+      <div class="stat-value" id="statIndustries">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="latestReport">最新报告</div>
+      <div class="stat-value" style="font-size:16px" id="statLatest">--</div>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="filter-panel">
+      <div class="filter-title" data-i18n="filterIndustry">行业筛选</div>
+      <div class="chips" id="industryChips"></div>
+      <div class="filter-title" data-i18n="filterQuality">品质筛选</div>
+      <div class="chips" id="qualityChips"></div>
+      <input type="text" class="search-box" id="searchInput" oninput="doSearch()" placeholder="搜索报告标题、标签、品牌..." data-i18n-placeholder="searchPlaceholder">
+    </div>
+    <div class="chart-panel">
+      <div class="filter-title" data-i18n="industryDist">行业分布</div>
+      <div class="chart-bars" id="chartBars"></div>
+    </div>
+  </div>
+
+  <div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px">
+    <span data-i18n="showing">显示</span> <strong id="resultCount">0</strong> <span data-i18n="reports">份报告</span>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div data-i18n="colReport">报告</div>
+      <div data-i18n="colIndustry">行业</div>
+      <div data-i18n="colQuality">品质</div>
+      <div data-i18n="colDate">日期</div>
+      <div></div>
+    </div>
+    <div id="reportList">
+      <div class="empty-state"><div class="empty-icon">📭</div><div data-i18n="noData">暂无报告数据</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <h3 data-i18n="adminLogin">管理员登入</h3>
+    <input type="password" id="pwdInput" placeholder="请输入管理密码" data-i18n-placeholder="pwdPlaceholder" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="error" id="loginError" data-i18n="wrongPwd">密码错误</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeLogin()" data-i18n="cancel">取消</button>
+      <button class="btn btn-primary" onclick="doLogin()" data-i18n="login">登入</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="viewModal">
+  <div class="modal">
+    <h3 id="viewTitle">--</h3>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px" id="viewSource">--</p>
+    <p style="font-size:14px" id="viewMsg" data-i18n="viewRequestMsg">此报告链接需管理者授权查看。已为你发送查看申请，请等待管理者审核。</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeView()" data-i18n="close">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA (auto-generated by pipeline — DO NOT EDIT)
+// ============================================================
+const SITE_DATA = {
+  "reports": [
+    {
+      "id": "RPT0017",
+      "title": "2021年寵物經濟發展趨勢研究報告",
+      "summary": "蘇寧金融研究院發布的寵物經濟深度研究報告，全面分析中國寵物經濟發展現狀與趨勢。報告指出2010-2019年中國寵物市場規模從140億元增至2204億元，年均複合增長率達32%，但市場滲透率僅6%，遠低於美國的68%，增長空間巨大。報告從寵物食品、醫療、用品、服務四大細分領域剖析市場格局，其中食品佔34%為最大消費份額。利好因素包括居民收入持續提高、人口老齡化加劇、單身人群規模擴大及線上經濟繁榮。報告預測國產品牌將加速崛起，並從產品端、營銷端、商業模式三方面探討本土企業發展路徑。",
+      "industry": "寵物",
+      "report_type": "行業研報",
+      "quality": "B",
+      "source": "蘇寧金融研究院",
+      "date": 1617206400000,
+      "pages": "45",
+      "language": "中文",
+      "tags": [
+        "寵物經濟",
+        "寵物食品",
+        "寵物醫療",
+        "寵物用品",
+        "市場規模",
+        "國產品牌",
+        "消費趨勢"
+      ],
+      "brands": [
+        "瑪氏",
+        "皇家"
+      ],
+      "markets": [
+        "中國",
+        "美國"
+      ],
+      "sub_topics": [
+        "寵物消費結構",
+        "銀髮經濟",
+        "單身經濟",
+        "線上市場",
+        "國貨崛起"
+      ],
+      "file_link": "https://bytedance.feishu.cn/file/KhzwbuzC8o3Xt5xxLIZcYBoMn0g"
+    },
+    {
+      "id": "RPT0018",
+      "title": "2021年寵物清潔市場趨勢報告",
+      "summary": "天貓新品創新中心(TMIC)與HCR慧辰聯合發布的寵物清潔市場深度報告。報告基於2020年8月至2021年7月淘系平台數據，將寵物清潔市場劃分為基礎清潔、身體清潔、五官清潔、環境清潔及智能產品五大賽道。核心發現：寵物清潔客群佔寵物用品整體購買人群近1/4；眼屎/淚痕和排泄異味是最大痛點；五官清潔和環境清潔呈現高端化趨勢；智能貓砂盆、智能除味器等智能清潔產品需求快速增長。消費者以一二線城市年輕女性為主，平均年齡32.5歲，注重精緻洗護。報告指出專寵專用、場景多元化、智能化升級是三大核心增長驅動力。",
+      "industry": "寵物",
+      "report_type": "市場趨勢",
+      "quality": "A",
+      "source": "天貓新品創新中心&HCR慧辰",
+      "date": 1630425600000,
+      "pages": "12",
+      "language": "中文",
+      "tags": [
+        "寵物清潔",
+        "貓砂",
+        "寵物洗護",
+        "智能寵物",
+        "市場細分"
+      ],
+      "markets": [
+        "中國"
+      ],
+      "sub_topics": [
+        "精緻養寵",
+        "專寵專用",
+        "寵物智能化",
+        "寵物消費升級"
+      ],
+      "file_link": "https://bytedance.feishu.cn/file/OIiabLyJwoehVoxMDw8c4RqCn3f"
+    }
+  ],
+  "config": {
+    "triggerUrl": "",
+    "lastUpdated": "2026-05-21 14:58",
+    "adminPwdHash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+  }
+};
+
+// ============================================================
+// I18N
+// ============================================================
+const I18N = {
+  'zh-CN': {
+    siteTitle: '市场洞察报告库', siteSub: '',
+    adminLogin: '🔑 管理登入', adminLogout: '🔓 退出管理',
+    totalReports: '报告总数', aGrade: 'A级报告', industries: '覆盖行业', latestReport: '最新报告',
+    filterIndustry: '行业筛选', filterQuality: '品质筛选', industryDist: '行业分布',
+    showing: '显示', reports: '份报告',
+    colReport: '报告', colIndustry: '行业', colQuality: '品质', colDate: '日期',
+    noData: '暂无报告数据', searchPlaceholder: '搜索报告标题、标签、品牌...',
+    all: '全部', view: '查看', requested: '已申请', approved: '已授权',
+    updateInfo: '管理模式下可手动触发数据更新', updateNow: '🔄 更新数据', lastUpdate: '上次更新：',
+    updating: '更新中...', updateDone: '✅ 更新完成！页面即将刷新', updateFail: '❌ 更新失败，请稍后重试',
+    pendingReviews: '⏳ 待审核查看申请', noPending: '暂无待审核申请',
+    approve: '批准', reject: '拒绝',
+    pwdPlaceholder: '请输入管理密码', login: '登入', cancel: '取消', close: '关闭',
+    wrongPwd: '密码错误',
+    viewRequestMsg: '此报告链接需管理者授权查看。已为你发送查看申请，请等待管理者审核。',
+    aPct: '占比',
+  },
+  'zh-TW': {
+    siteTitle: '市場洞察報告庫', siteSub: '',
+    adminLogin: '🔑 管理登入', adminLogout: '🔓 退出管理',
+    totalReports: '報告總數', aGrade: 'A級報告', industries: '覆蓋行業', latestReport: '最新報告',
+    filterIndustry: '行業篩選', filterQuality: '品質篩選', industryDist: '行業分佈',
+    showing: '顯示', reports: '份報告',
+    colReport: '報告', colIndustry: '行業', colQuality: '品質', colDate: '日期',
+    noData: '暫無報告數據', searchPlaceholder: '搜索報告標題、標籤、品牌...',
+    all: '全部', view: '查看', requested: '已申請', approved: '已授權',
+    updateInfo: '管理模式下可手動觸發數據更新', updateNow: '🔄 更新數據', lastUpdate: '上次更新：',
+    updating: '更新中...', updateDone: '✅ 更新完成！頁面即將刷新', updateFail: '❌ 更新失敗，請稍後重試',
+    pendingReviews: '⏳ 待審核查看申請', noPending: '暫無待審核申請',
+    approve: '批准', reject: '拒絕',
+    pwdPlaceholder: '請輸入管理密碼', login: '登入', cancel: '取消', close: '關閉',
+    wrongPwd: '密碼錯誤',
+    viewRequestMsg: '此報告連結需管理者授權查看。已為你發送查看申請，請等待管理者審核。',
+    aPct: '佔比',
+  },
+  'en': {
+    siteTitle: 'Market Insights Library', siteSub: '',
+    adminLogin: '🔑 Admin', adminLogout: '🔓 Logout',
+    totalReports: 'Total Reports', aGrade: 'Grade A', industries: 'Industries', latestReport: 'Latest Report',
+    filterIndustry: 'Industry', filterQuality: 'Quality', industryDist: 'Distribution',
+    showing: 'Showing', reports: 'reports',
+    colReport: 'Report', colIndustry: 'Industry', colQuality: 'Quality', colDate: 'Date',
+    noData: 'No reports available', searchPlaceholder: 'Search title, tags, brands...',
+    all: 'All', view: 'View', requested: 'Requested', approved: 'Approved',
+    updateInfo: 'You can manually trigger data update in admin mode', updateNow: '🔄 Update Data', lastUpdate: 'Last updated: ',
+    updating: 'Updating...', updateDone: '✅ Updated! Page will refresh', updateFail: '❌ Update failed, please retry',
+    pendingReviews: '⏳ Pending View Requests', noPending: 'No pending requests',
+    approve: 'Approve', reject: 'Reject',
+    pwdPlaceholder: 'Enter admin password', login: 'Login', cancel: 'Cancel', close: 'Close',
+    wrongPwd: 'Incorrect password',
+    viewRequestMsg: 'This report requires admin authorization to view. A request has been sent. Please wait for approval.',
+    aPct: 'ratio',
+  }
+};
+
+let currentLang = 'zh-CN';
+let isAdmin = false;
+let reports = [];
+let activeIndustry = '全部';
+let activeQuality = '全部';
+let searchTerm = '';
+let viewRequests = [];
+
+function t(key) { return (I18N[currentLang] || I18N['zh-CN'])[key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    const map = {'zh-CN':'简','zh-TW':'繁','en':'EN'};
+    b.classList.toggle('active', b.textContent.trim() === map[lang]);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
+  renderAll();
+}
+
+function toggleAdmin() {
+  if (isAdmin) { isAdmin = false; updateAdminUI(); return; }
+  document.getElementById('loginModal').classList.add('show');
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+function closeLogin() { document.getElementById('loginModal').classList.remove('show'); }
+
+async function doLogin() {
+  const pwd = document.getElementById('pwdInput').value;
+  const hash = await sha256(pwd);
+  const expected = SITE_DATA.config.adminPwdHash || '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+  if (hash === expected) {
+    isAdmin = true; updateAdminUI(); closeLogin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+async function sha256(msg) {
+  const buf = new TextEncoder().encode(msg);
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function updateAdminUI() {
+  const btn = document.getElementById('adminBtn');
+  btn.textContent = isAdmin ? t('adminLogout') : t('adminLogin');
+  btn.classList.toggle('logged-in', isAdmin);
+  document.getElementById('updateBar').classList.toggle('show', isAdmin);
+  document.getElementById('reviewPanel').classList.toggle('show', isAdmin);
+  if (isAdmin) renderReviews();
+}
+
+async function triggerUpdate() {
+  const btn = document.getElementById('updateBtn');
+  const msg = document.getElementById('updateMsg');
+  const url = SITE_DATA.config.triggerUrl;
+  if (!url) { msg.textContent = '未配置更新服务地址'; return; }
+  btn.disabled = true; btn.textContent = '⏳ ' + t('updating');
+  msg.textContent = t('updating');
+  try {
+    const resp = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({action:'update'}) });
+    if (resp.ok) { msg.textContent = t('updateDone'); setTimeout(() => location.reload(), 3000); }
+    else { msg.textContent = t('updateFail'); }
+  } catch(e) { msg.textContent = t('updateFail'); }
+  btn.disabled = false; btn.textContent = '🔄 ' + t('updateNow');
+}
+
+function requestView(reportId) {
+  const r = reports.find(rp => rp.id === reportId);
+  document.getElementById('viewTitle').textContent = r ? r.title : '';
+  document.getElementById('viewSource').textContent = r ? (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') : '';
+  document.getElementById('viewModal').classList.add('show');
+  const exists = viewRequests.find(v => v.id === reportId);
+  if (!exists) {
+    viewRequests.push({ id: reportId, time: new Date().toISOString(), status: 'pending' });
+    saveRequests();
+    if (isAdmin) renderReviews();
+    renderAll();
+  }
+}
+
+function closeView() { document.getElementById('viewModal').classList.remove('show'); }
+
+function approveRequest(idx) { viewRequests[idx].status = 'approved'; saveRequests(); renderReviews(); renderAll(); }
+function rejectRequest(idx) { viewRequests[idx].status = 'rejected'; saveRequests(); renderReviews(); renderAll(); }
+
+function saveRequests() { localStorage.setItem('view_requests', JSON.stringify(viewRequests)); }
+function loadRequests() { try { viewRequests = JSON.parse(localStorage.getItem('view_requests')||'[]'); } catch(e) { viewRequests = []; } }
+
+function renderReviews() {
+  const list = document.getElementById('reviewList');
+  const pending = viewRequests.filter(r => r.status === 'pending');
+  if (pending.length === 0) {
+    list.innerHTML = '<span style="color:var(--text-secondary);font-size:13px">' + t('noPending') + '</span>';
+    return;
+  }
+  list.innerHTML = pending.map((r, i) => {
+    const report = reports.find(rp => rp.id === r.id);
+    const title = report ? report.title : r.id;
+    const globIdx = viewRequests.indexOf(r);
+    return '<div class="review-item"><div class="review-info"><strong>' + title + '</strong><br><span style="font-size:11px;color:var(--text-secondary)">' + new Date(r.time).toLocaleString() + '</span></div><div class="review-actions"><button class="btn-approve" onclick="approveRequest(' + globIdx + ')">' + t('approve') + '</button><button class="btn-reject" onclick="rejectRequest(' + globIdx + ')">' + t('reject') + '</button></div></div>';
+  }).join('');
+}
+
+function fmtDate(ts) {
+  if (!ts) return '--';
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function getFiltered() {
+  return reports.filter(r => {
+    if (activeIndustry !== '全部' && r.industry !== activeIndustry) return false;
+    if (activeQuality !== '全部' && r.quality !== activeQuality) return false;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      const hay = (r.title + ' ' + (r.source||'') + ' ' + (r.tags||[]).join(' ') + ' ' + (r.brands||[]).join(' ')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function doSearch() { searchTerm = document.getElementById('searchInput').value.trim(); renderAll(); }
+function setIndustry(ind) { activeIndustry = ind; renderAll(); }
+function setQuality(q) { activeQuality = q; renderAll(); }
+
+function renderAll() {
+  const filtered = getFiltered();
+  const uniqInd = [...new Set(reports.map(r => r.industry).filter(Boolean))];
+  const aCount = reports.filter(r => r.quality === 'A').length;
+  const latest = reports.filter(r => r.date).sort((a,b) => (b.date||0)-(a.date||0))[0];
+
+  document.getElementById('statTotal').textContent = reports.length;
+  document.getElementById('statA').textContent = aCount;
+  document.getElementById('statAPct').textContent = reports.length ? '(' + Math.round(aCount/reports.length*100) + '% ' + t('aPct') + ')' : '';
+  document.getElementById('statIndustries').textContent = uniqInd.length;
+  document.getElementById('statLatest').textContent = latest ? (latest.title||'').substring(0,20) + '...' : '--';
+
+  const indCounts = {};
+  reports.forEach(r => { indCounts[r.industry] = (indCounts[r.industry]||0)+1; });
+  document.getElementById('industryChips').innerHTML = ['全部', ...Object.keys(indCounts).sort()].map(i => '<button class="chip' + (activeIndustry===i?' active':'') + '" onclick="setIndustry(\'' + i.replace(/'/g,"\\'") + '\')">' + i + (i!=='全部'?' ('+indCounts[i]+')':' ('+reports.length+')') + '</button>').join('');
+  document.getElementById('qualityChips').innerHTML = ['全部','A','B','C'].map(q => '<button class="chip' + (activeQuality===q?' active':'') + '" onclick="setQuality(\''+q+'\')">' + q + '</button>').join('');
+
+  const chartMax = Math.max(...Object.values(indCounts), 1);
+  document.getElementById('chartBars').innerHTML = Object.entries(indCounts).sort((a,b)=>b[1]-a[1]).map(([ind,cnt]) => '<div class="chart-row' + (activeIndustry===ind?' active':'') + '" onclick="setIndustry(\'' + ind.replace(/'/g,"\\'") + '\')"><div class="chart-label" title="'+ind+'">'+ind+'</div><div class="chart-bar-wrap"><div class="chart-bar" style="width:'+(cnt/chartMax*100)+'%"></div></div><div class="chart-count">'+cnt+'</div></div>').join('');
+
+  document.getElementById('resultCount').textContent = filtered.length;
+  const list = document.getElementById('reportList');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>' + t('noData') + '</div></div>';
+  } else {
+    list.innerHTML = filtered.map(r => {
+      const isReq = viewRequests.find(v => v.id === r.id);
+      const isApproved = isReq && isReq.status === 'approved';
+      let cls = 'view-btn', txt = t('view');
+      if (isApproved) { cls += ' approved'; txt = t('approved'); }
+      else if (isReq && isReq.status === 'pending') { cls += ' requested'; txt = t('requested'); }
+      // Generate feishu file link
+      let link = '';
+      if (typeof r.file_link === 'string' && r.file_link) link = r.file_link;
+      else if (typeof r.file_link === 'object' && r.file_link && r.file_link.link) link = r.file_link.link;
+      // If approved and has link, make it a real link; otherwise show request dialog
+      if (isApproved && link) {
+        return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div></div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><a href="' + link + '" target="_blank" class="view-btn approved" style="text-decoration:none">🔗 ' + t('approved') + '</a></div></div>';
+      }
+      return '<div class="table-row"><div><div class="col-title">' + r.title + '</div><div class="col-meta">' + (r.source||'') + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div></div><div class="col-industry">' + (r.industry||'--') + '</div><div><span class="badge badge-' + (r.quality||'C') + '">' + (r.quality||'C') + '</span></div><div>' + fmtDate(r.date) + '</div><div><button class="' + cls + '" onclick="requestView(\'' + r.id + '\')">' + txt + '</button></div></div>';
+    }).join('');
+  }
+
+  if (isAdmin && SITE_DATA.config.lastUpdated) {
+    document.getElementById('updateMsg').textContent = t('lastUpdate') + SITE_DATA.config.lastUpdated;
+  }
+}
+
+function init() {
+  loadRequests();
+  reports = SITE_DATA.reports || [];
+  if (!SITE_DATA.config.adminPwdHash) SITE_DATA.config.adminPwdHash = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>
