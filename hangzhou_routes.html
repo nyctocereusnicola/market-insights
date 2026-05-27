@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杭州路线规划 — Day 1 & Day 2 驾车路线</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5; color: #222; padding: 24px 16px; max-width: 800px; margin: 0 auto;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 13px; margin-bottom: 20px; }
+  .day-header {
+    background: linear-gradient(135deg, #1677ff, #0958d9);
+    color: #fff; padding: 10px 16px; border-radius: 8px 8px 0 0;
+    font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+    margin-top: 20px;
+  }
+  .day-header.day2 { background: linear-gradient(135deg, #52c41a, #389e0d); }
+  .route-card {
+    background: #fff; border: 1px solid #e8e8e8; border-top: none; padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .route-card:last-child { border-radius: 0 0 8px 8px; }
+  .route-num {
+    display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+    background: #1677ff; color: #fff; text-align: center; line-height: 22px;
+    font-size: 12px; font-weight: 700; margin-right: 6px; flex-shrink: 0;
+  }
+  .day2 .route-num { background: #52c41a; }
+  .route-label { font-weight: 600; font-size: 14px; }
+  .route-addresses { font-size: 12px; color: #666; margin-top: 2px; line-height: 1.6; }
+  .route-arrow { color: #999; margin: 0 6px; }
+  .link-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .link-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 14px; border-radius: 6px; text-decoration: none;
+    font-size: 13px; font-weight: 500; transition: all .2s;
+    border: 1px solid transparent;
+  }
+  .link-btn.amap { background: #e6f7ff; color: #0958d9; border-color: #91caff; }
+  .link-btn.amap:hover { background: #bae0ff; }
+  .link-btn.baidu { background: #fff7e6; color: #d46b08; border-color: #ffd591; }
+  .link-btn.baidu:hover { background: #ffe7ba; }
+  .link-btn.google { background: #f0f0f0; color: #333; border-color: #d9d9d9; }
+  .link-btn.google:hover { background: #e0e0e0; }
+  .hotel-badge {
+    display: inline-block; background: #fff0f6; color: #c41d7f; border: 1px solid #ffadd2;
+    border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 600; margin-right: 4px;
+  }
+  .footer { text-align: center; font-size: 11px; color: #999; margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<h1>杭州出差路线规划</h1>
+<p class="subtitle">
+  <span class="hotel-badge">基地</span> 杭州白金汉爵大酒店 3楼318 · 西湖区珊瑚沙东路9号<br>
+  出行方式：<strong>驾车</strong> · 点击按钮直接跳转地图App查看路线详情和预估时间
+</p>
+
+<!-- ============ DAY 1 ============ -->
+<div class="day-header">
+  📅 Day 1 — 余杭 / 德清线（4站）
+  <span style="font-weight:400;font-size:12px;margin-left:auto">酒店 → 德清 → 余杭环线</span>
+</div>
+
+<!-- Route 1-1 -->
+<div class="route-card">
+  <div>
+    <span class="route-num">1</span>
+    <span class="route-label">白金汉爵 → 杭州川田</span>
+  </div>
+  <div class="route-addresses">
+    西湖区珊瑚沙东路9号 <span class="route-arrow">→</span> 湖州市德清县镇西南路188号
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97&to%5Bname%5D=%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97%E5%88%B0%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<!-- Route 1-2 -->
+<div class="route-card">
+  <div>
+    <span class="route-num">2</span>
+    <span class="route-label">杭州川田 → 舒洁（丁总）</span>
+  </div>
+  <div class="route-addresses">
+    德清县镇西南路188号 <span class="route-arrow">→</span> 余杭区冷泉坝三白潭村委
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7%E5%88%B0%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<!-- Route 1-3 -->
+<div class="route-card">
+  <div>
+    <span class="route-num">3</span>
+    <span class="route-label">舒洁 → 杭州余宏</span>
+  </div>
+  <div class="route-addresses">
+    余杭区三白潭村委 <span class="route-arrow">→</span> 杭州余宏卫生用品有限公司（余杭区百丰路2号）
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94%E5%88%B0%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<!-- Route 1-4 -->
+<div class="route-card">
+  <div>
+    <span class="route-num">4</span>
+    <span class="route-label">杭州余宏 → 优全电商部</span>
+  </div>
+  <div class="route-addresses">
+    余杭区百丰路2号 <span class="route-arrow">→</span> 余杭区仓前街道文一西路1378号1幢E1301/E1303
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%BB%93%E5%89%8D%E8%A1%97%E9%81%93%E6%96%87%E4%B8%80%E8%A5%BF%E8%B7%AF1378%E5%8F%B7" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E5%88%B0%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%BB%93%E5%89%8D%E8%A1%97%E9%81%93%E6%96%87%E4%B8%80%E8%A5%BF%E8%B7%AF1378%E5%8F%B7" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<!-- ============ DAY 2 ============ -->
+<div class="day-header day2">
+  📅 Day 2 — 桐庐线（2站）
+  <span style="font-weight:400;font-size:12px;margin-left:auto">酒店 → 桐庐往返</span>
+</div>
+
+<div class="route-card day2">
+  <div>
+    <span class="route-num">1</span>
+    <span class="route-label">白金汉爵 → 千芝雅</span>
+  </div>
+  <div class="route-addresses">
+    西湖区珊瑚沙东路9号 <span class="route-arrow">→</span> 杭州桐庐县凤旺路88号
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97%E5%88%B0%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<div class="route-card day2">
+  <div>
+    <span class="route-num">2</span>
+    <span class="route-label">千芝雅 → 新远</span>
+  </div>
+  <div class="route-addresses">
+    桐庐县凤旺路88号 <span class="route-arrow">→</span> 杭州桐庐县滩头路77号
+  </div>
+  <div class="link-group">
+    <a class="link-btn amap" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E6%BB%A9%E5%A4%B4%E8%B7%AF77%E5%8F%B7" target="_blank">高德地图</a>
+    <a class="link-btn baidu" href="https://map.baidu.com/search/%E4%BB%8E%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7%E5%88%B0%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E6%BB%A9%E5%A4%B4%E8%B7%AF77%E5%8F%B7" target="_blank">百度地图</a>
+  </div>
+</div>
+
+<!-- ============ 概要表 ============ -->
+<div class="day-header" style="margin-top: 24px; background: linear-gradient(135deg, #595959, #434343);">
+  📊 全程概览
+</div>
+<div style="background:#fff; border:1px solid #e8e8e8; border-top:none; border-radius:0 0 8px 8px; padding:16px; overflow-x:auto;">
+<table style="width:100%; border-collapse:collapse; font-size:13px;">
+<thead>
+  <tr style="background:#fafafa;">
+    <th style="padding:8px; text-align:left; border-bottom:1px solid #e8e8e8;">天</th>
+    <th style="padding:8px; text-align:left; border-bottom:1px solid #e8e8e8;">段</th>
+    <th style="padding:8px; text-align:left; border-bottom:1px solid #e8e8e8;">起点</th>
+    <th style="padding:8px; text-align:left; border-bottom:1px solid #e8e8e8;">终点</th>
+    <th style="padding:8px; text-align:right; border-bottom:1px solid #e8e8e8;">操作</th>
+  </tr>
+</thead>
+<tbody>
+  <tr><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">D1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">白金汉爵</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">杭州川田（德清）</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97&to%5Bname%5D=%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7" target="_blank">高德</a></td></tr>
+  <tr><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">D1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">2</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">杭州川田</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">舒洁（三白潭村委）</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%B9%96%E5%B7%9E%E5%B8%82%E5%BE%B7%E6%B8%85%E5%8E%BF%E9%95%87%E8%A5%BF%E5%8D%97%E8%B7%AF188%E5%8F%B7&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94" target="_blank">高德</a></td></tr>
+  <tr><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">D1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">3</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">舒洁</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">杭州余宏（百丰路2号）</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%B8%89%E7%99%BD%E6%BD%AD%E6%9D%91%E5%A7%94&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8" target="_blank">高德</a></td></tr>
+  <tr><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">D1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">4</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">余宏</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">优全电商部（文一西路）</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E4%BD%99%E5%AE%8F%E5%8D%AB%E7%94%9F%E7%94%A8%E5%93%81%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%BD%99%E6%9D%AD%E5%8C%BA%E4%BB%93%E5%89%8D%E8%A1%97%E9%81%93%E6%96%87%E4%B8%80%E8%A5%BF%E8%B7%AF1378%E5%8F%B7" target="_blank">高德</a></td></tr>
+  <tr style="background:#f6ffed;"><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">D2</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">1</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">白金汉爵</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0;">千芝雅（桐庐凤旺路）</td><td style="padding:6px 8px; border-bottom:1px solid #f0f0f0; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E7%99%BD%E9%87%91%E6%B1%89%E7%88%B5%E5%A4%A7%E9%85%92%E5%BA%97&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7" target="_blank">高德</a></td></tr>
+  <tr style="background:#f6ffed;"><td style="padding:6px 8px;">D2</td><td style="padding:6px 8px;">2</td><td style="padding:6px 8px;">千芝雅</td><td style="padding:6px 8px;">新远（桐庐滩头路）</td><td style="padding:6px 8px; text-align:right;"><a class="link-btn amap" style="font-size:11px;padding:3px 8px;" href="https://ditu.amap.com/dir?type=car&policy=1&from%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E5%87%A4%E6%97%BA%E8%B7%AF88%E5%8F%B7&to%5Bname%5D=%E6%9D%AD%E5%B7%9E%E6%A1%90%E5%BA%90%E5%8E%BF%E6%BB%A9%E5%A4%B4%E8%B7%AF77%E5%8F%B7" target="_blank">高德</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+  链接点开后在浏览器或手机地图App里查看路线 · 点击高德地图链接体验最佳
+</div>
+
+</body>
+</html>
