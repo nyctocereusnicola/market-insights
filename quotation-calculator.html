@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>报价计算器 | 在水一方品牌营销</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#F8F7F4;--card:#FFF;--text:#2C2C2A;--sub:#888780;--border:rgba(44,44,42,.12);--accent:#534AB7;--accent-bg:#EEEDFE;--teal:#0F6E56;--teal-bg:#E1F5EE;--coral:#D85A30;--coral-bg:#FAECE7;--amber:#BA7517;--amber-bg:#FAEEDA;--r:12px;--rs:8px}
+body{font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:150px}
+
+.header{background:var(--card);border-bottom:.5px solid var(--border);padding:16px 16px 12px;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.header p{font-size:12px;color:var(--sub);margin-top:2px}
+
+.params-bar{display:flex;gap:6px;padding:10px 16px;flex-wrap:wrap;background:var(--card);border-bottom:.5px solid var(--border);position:sticky;top:56px;z-index:99;align-items:center}
+.param-item{flex:1;min-width:70px;max-width:110px}
+.param-item label{display:block;font-size:10px;color:var(--sub);font-weight:500;margin-bottom:1px}
+.param-item input{width:100%;height:30px;border:.5px solid var(--border);border-radius:var(--rs);padding:0 6px;font-size:12px;background:var(--bg);outline:none}
+.param-item input:focus{border-color:var(--accent)}
+.btn{height:30px;padding:0 10px;border-radius:var(--rs);font-size:11px;font-weight:500;cursor:pointer;border:none;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;transition:opacity .15s;-webkit-tap-highlight-color:transparent}
+.btn:active{opacity:.8}
+.btn-outline{background:transparent;border:.5px solid var(--border);color:var(--text)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-sm{height:27px;font-size:11px;padding:0 8px}
+
+.toggle-group{display:inline-flex;align-items:center;gap:4px}
+.tog-pill{height:27px;padding:0 10px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--sub);-webkit-tap-highlight-color:transparent;transition:all .15s;white-space:nowrap}
+.tog-pill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toggle-group input{width:40px;height:27px;border:.5px solid var(--border);border-radius:6px;padding:0 4px;font-size:11px;text-align:center;background:var(--bg);outline:none;transition:all .15s}
+.toggle-group input:focus{border-color:var(--accent)}
+.toggle-group input.disabled,.toggle-group.off input{background:#ecebe7;color:var(--sub);pointer-events:none;opacity:.5}
+.tog-suf{font-size:10px;color:var(--sub);font-weight:500}
+.toggle-group.off .tog-suf{opacity:.4}
+
+.param-item .off-input{background:#ecebe7;color:var(--sub);pointer-events:none;opacity:.45}
+
+.tabs{display:flex;background:var(--card);border-bottom:.5px solid var(--border);position:sticky;top:105px;z-index:98}
+.tab{flex:1;text-align:center;padding:10px 0;font-size:13px;font-weight:500;color:var(--sub);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-badge{display:inline-block;background:var(--accent);color:#fff;font-size:11px;border-radius:10px;padding:0 6px;margin-left:4px;line-height:18px;font-weight:600}
+
+.search-bar{padding:8px 16px;background:var(--card);border-bottom:.5px solid var(--border)}
+.search-row{display:flex;gap:8px}
+.search-row input{flex:1;height:34px;border:.5px solid var(--border);border-radius:var(--rs);padding:0 10px 0 30px;font-size:13px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none'%3E%3Cpath d='M10 10l2.6 2.6M6.2 10.6a4.4 4.4 0 100-8.8 4.4 4.4 0 000 8.8z' stroke='%23888780' stroke-width='1.3'/%3E%3C/svg%3E") no-repeat 10px center;outline:none}
+.search-row input:focus{border-color:var(--accent)}
+
+.cat-chips{padding:8px 16px;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;background:var(--card)}
+.cat-chips::-webkit-scrollbar{display:none}
+.cat-chip{font-size:11px;padding:4px 10px;border-radius:14px;border:.5px solid var(--border);background:var(--bg);cursor:pointer;white-space:nowrap;flex-shrink:0;color:var(--sub);-webkit-tap-highlight-color:transparent;transition:all .15s}
+.cat-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.section{margin-bottom:16px}
+.sec-head{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;background:var(--card);border-bottom:.5px solid var(--border)}
+.sec-head-left{display:flex;align-items:center;gap:8px}
+.sec-tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap}
+.tag-purple{background:#EEEDFE;color:#534AB7}
+.tag-blue{background:#E6F1FB;color:#185FA5}
+.tag-coral{background:#FAECE7;color:#993C1D}
+.tag-teal{background:#E1F5EE;color:#0F6E56}
+.tag-amber{background:#FAEEDA;color:#854F0B}
+.tag-gray{background:#F1EFE8;color:#5F5E5A}
+.sec-title{font-size:14px;font-weight:600}
+.sec-count{font-size:11px;color:var(--sub)}
+.sec-arrow{font-size:11px;color:var(--sub);transition:transform .2s}
+.sec-head.collapsed .sec-arrow{transform:rotate(-90deg)}
+.sec-content{overflow:hidden;transition:max-height .3s}
+.sec-content.collapsed{max-height:0!important}
+
+.item{background:var(--card);border:.5px solid var(--border);border-radius:var(--r);margin:0 16px 6px;padding:10px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;display:flex;align-items:center;gap:10px}
+.item:active{opacity:.85}
+.item.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(83,74,183,.1);flex-wrap:wrap;padding-bottom:10px}
+.item-plus{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.item-plus::before,.item-plus::after{content:'';position:absolute;background:var(--sub);border-radius:1px}
+.item-plus::before{width:10px;height:1.5px}
+.item-plus::after{width:1.5px;height:10px}
+.item.sel .item-plus{display:none}
+.item-check{width:22px;height:22px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;flex-shrink:0}
+.item.sel .item-check{display:flex}
+.chk-svg{width:14px;height:14px}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:13px;font-weight:500;line-height:1.4}
+.item-meta{font-size:10px;color:var(--sub);margin-top:1px}
+.item-price{text-align:right;flex-shrink:0}
+.item-price-num{font-size:14px;font-weight:600}
+.item-price-unit{font-size:10px;color:var(--sub)}
+
+.item-xpand{display:none;padding-top:8px;border-top:.5px solid var(--border);margin-top:6px;width:100%}
+.item.sel .item-xpand{display:block}
+.ctrls{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.ctrl label{display:block;font-size:10px;color:var(--sub);margin-bottom:1px}
+.ctrl input{width:100%;height:28px;border:.5px solid var(--border);border-radius:6px;padding:0 6px;font-size:11px;background:var(--bg);outline:none}
+.ctrl input:focus{border-color:var(--accent)}
+.num-input::-webkit-inner-spin-button,.num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.results{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}
+.rl{font-size:10px;color:var(--sub)}
+.rv{font-size:12px;font-weight:600}
+.rv-total{font-size:13px;font-weight:700;color:var(--teal)}
+.rmv{grid-column:span 2;text-align:right;margin-top:4px}
+.rmv span{font-size:11px;color:var(--coral);cursor:pointer;font-weight:500}
+
+.summary{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:.5px solid var(--border);padding:10px 16px;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sum-l{display:flex;align-items:center;gap:12px}
+.sum-item{text-align:left}
+.sl{font-size:10px;color:var(--sub)}
+.sv{font-size:15px;font-weight:700;white-space:nowrap}
+.sv-grand{color:var(--teal);font-size:18px!important}
+.sum-r{font-size:10px;color:var(--sub);line-height:1.5;text-align:right}
+
+.empty{padding:40px;text-align:center;color:var(--sub);font-size:13px}
+
+@media(min-width:768px){body{max-width:800px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.04);background:var(--card)}.summary{left:50%;transform:translateX(-50%);max-width:800px}}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="header"><h1>报价计算器</h1></div>
+
+<div class="params-bar" id="paramsBar">
+  <div class="toggle-group" id="tgTax">
+    <button class="tog-pill on" onclick="toggleTax()">含税</button>
+    <input type="number" id="defTax" value="6" step="0.01" min="0" onchange="onRateChange()">
+    <span class="tog-suf">%</span>
+  </div>
+  <div class="toggle-group" id="tgFee">
+    <button class="tog-pill" onclick="toggleFee()">手续费</button>
+    <input type="number" id="defFee" value="2" step="0.01" min="0" onchange="onRateChange()">
+    <span class="tog-suf">%</span>
+  </div>
+  <div class="toggle-group" id="tgDisc">
+    <button class="tog-pill" onclick="toggleDisc()">折扣</button>
+    <input type="number" id="defDiscount" value="0" step="0.01" min="0" max="100" onchange="onRateChange()">
+    <span class="tog-suf">%</span>
+  </div>
+  <button class="btn btn-accent btn-sm" onclick="applyDefaults()">应用</button>
+  <button class="btn btn-danger btn-sm" onclick="clearAll()">清空</button>
+</div>
+
+<div class="tabs" id="tabsBar">
+  <button class="tab active" data-tab="all" onclick="switchTab('all')">全部服务</button>
+  <button class="tab" data-tab="sel" onclick="switchTab('sel')">已选 <span class="tab-badge" id="tabBadge">0</span></button>
+</div>
+
+<div class="search-bar" id="searchWrap">
+  <div class="search-row">
+    <input type="text" id="searchInp" placeholder="搜索服务项目...">
+    <button class="btn btn-outline" onclick="document.getElementById('searchInp').value='';render()">清除</button>
+  </div>
+</div>
+
+<div class="cat-chips" id="catChipsW"></div>
+
+<div id="main"></div>
+
+<div class="summary" id="sumBar">
+  <div class="sum-l">
+    <div class="sum-item"><span class="sl">已选 <span id="scnt">0</span> 项</span><div class="sv sv-grand" id="sgrand">¥0</div></div>
+  </div>
+  <div class="sum-r">
+    <div>小计 <span id="ssub">¥0</span></div>
+    <div>税 <span id="stax" style="color:var(--amber)">¥0</span> · 费 <span id="sfee" style="color:var(--accent)">¥0</span> · 折扣 <span id="sdisc" style="color:var(--coral)">-¥0</span></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA FROM EXCEL =====
+const CATEGORIES = [
+  {key:"zengzhi",name:"增值服务",tag:"tag-teal",items:[
+    {N:"产品筹备服务",U:"个",P:0,B:"产品筹备服务"},
+    {N:"品系规划建议",U:"个",P:0,B:"品系规划建议"}
+  ]},
+  {key:"trademark",name:"商标",tag:"tag-purple",items:[
+    {N:"商标引荐（3类以内）",U:"个",P:5000,B:"商标引荐"},
+    {N:"商标引荐（3类及以上）",U:"个",P:10000,B:"商标引荐"},
+    {N:"商标引荐（10类及以上）",U:"个",P:15000,B:"商标引荐"},
+    {N:"品牌命名（3类以内）",U:"个",P:20000,B:"商标命名"},
+    {N:"品牌命名（3类及以上）",U:"个",P:50000,B:"商标命名"}
+  ]},
+  {key:"strategy",name:"策略分析",tag:"tag-blue",items:[
+    {N:"品牌策略分析",U:"",P:60000,B:"策略分析"}
+  ]},
+  {key:"brand_plan",name:"品牌策划",tag:"tag-amber",items:[
+    {N:"品牌理念及定位",U:"套",P:40000,B:"品牌策划"}
+  ]},
+  {key:"logo",name:"logo设计",tag:"tag-amber",items:[
+    {N:"Logo设计+应用规范5项（1000内）：基础视觉构建服务",U:"套",P:20000,B:"logo设计"},
+    {N:"Logo设计+应用规范13项：中大型项目、全案服务配套，或涉及品牌战略升级的项目",U:"套",P:60000,B:"logo设计"}
+  ]},
+  {key:"super_symbol",name:"超级符号/视觉锤",tag:"tag-coral",items:[
+    {N:"超级符号视觉轴",U:"套",P:40000,B:"超级符号/视觉锤"}
+  ]},
+  {key:"cis",name:"企业形象识别系统 CIS",tag:"tag-blue",items:[
+    {N:"企业理念识别系统MI",U:"套",P:160000,B:"企业形象识别系统"},
+    {N:"企业行为识别系统建设BI",U:"套",P:50000,B:"企业形象识别系统"},
+    {N:"企业视觉识别系统VI",U:"套",P:150000,B:"企业形象识别系统"}
+  ]},
+  {key:"space",name:"空间设计",tag:"tag-teal",items:[
+    {N:"企业目视化系统视觉打造",U:"款",P:300000,B:"空间设计"},
+    {N:"企业空间环境打造（5000㎡以下）",U:"每平方米",P:180,B:"空间设计"},
+    {N:"企业空间环境打造（5000㎡以上）",U:"每平方米",P:160,B:"空间设计"}
+  ]},
+  {key:"package",name:"包装设计",tag:"tag-coral",items:[
+    {N:"包装设计-常规基础-首款",U:"款",P:15000,B:"包装设计"},
+    {N:"包装设计-常规基础-初级延伸",U:"款",P:500,B:"包装设计"},
+    {N:"包装设计-常规基础-中级延伸",U:"款",P:1500,B:"包装设计"},
+    {N:"包装设计-常规基础-高级延伸",U:"款",P:6000,B:"包装设计"},
+    {N:"包装设计-场景/手绘/原创创意-首款",U:"款",P:40000,B:"包装设计"},
+    {N:"包装设计-场景/手绘/原创创意-初级延伸",U:"款",P:1000,B:"包装设计"},
+    {N:"包装设计-场景/手绘/原创创意-中级延伸",U:"款",P:3000,B:"包装设计"},
+    {N:"包装设计-场景/手绘/原创创意-高级延伸",U:"款",P:20000,B:"包装设计"},
+    {N:"包装设计-3D-首款",U:"款",P:80000,B:"包装设计"},
+    {N:"包装设计-3D-初级延伸",U:"款",P:4000,B:"包装设计"},
+    {N:"包装设计-3D-中级延伸",U:"款",P:20000,B:"包装设计"},
+    {N:"包装设计-3D-高级延伸",U:"款",P:40000,B:"包装设计"}
+  ]},
+  {key:"pkg_support",name:"包装配套设计",tag:"tag-amber",items:[
+    {N:"纸尿裤底膜前腰贴(全套设计)",U:"套",P:1800,B:"包装配套设计"},
+    {N:"卫生巾包膜(全套设计)",U:"套",P:1800,B:"包装配套设计"},
+    {N:"纸箱设计",U:"款",P:1000,B:"包装配套设计"},
+    {N:"产品效果图 - 普通白底",U:"张",P:100,B:"包装配套设计"},
+    {N:"产品效果图 - 背景款",U:"张",P:400,B:"包装配套设计"},
+    {N:"产品效果图 - 3D建模款背景",U:"张",P:1500,B:"包装配套设计"}
+  ]},
+  {key:"ecom",name:"电商设计",tag:"tag-purple",items:[
+    {N:"常规原创首页",U:"款",P:30000,B:"电商设计"},
+    {N:"常规详情页 - 首款",U:"款",P:20000,B:"电商设计"},
+    {N:"常规详情页 - 中级延伸",U:"款",P:6000,B:"电商设计"},
+    {N:"常规详情页 - 高级延伸",U:"款",P:10000,B:"电商设计"},
+    {N:"常规首页轮播创意海报",U:"张",P:5000,B:"电商设计"},
+    {N:"3D原创 - 级别二 首页",U:"款",P:50000,B:"电商设计"},
+    {N:"3D原创 - 级别二 详情页首款",U:"款",P:40000,B:"电商设计"},
+    {N:"3D原创 - 级别二 详情页 - 初级级延伸",U:"款",P:10000,B:"电商设计"},
+    {N:"3D原创 - 级别二 详情页 - 高级级延伸",U:"款",P:20000,B:"电商设计"},
+    {N:"3D原创 - 级别三 首页",U:"款",P:70000,B:"电商设计"},
+    {N:"3D原创 - 级别三 详情页首款",U:"款",P:60000,B:"电商设计"},
+    {N:"3D原创 - 级别三 详情页 - 初级延伸",U:"款",P:20000,B:"电商设计"},
+    {N:"3D原创 - 级别三 详情页 - 高级延伸",U:"款",P:30000,B:"电商设计"},
+    {N:"3D首页轮播海报",U:"张",P:10000,B:"电商设计"},
+    {N:"3D 产品主图（场景渲染主图）",U:"张",P:3000,B:"电商设计"},
+    {N:"产品（细节/卖点）动态循环动画 （适用于详情页画面里的循环动画3-5秒）",U:"个",P:12000,B:"电商设计"},
+    {N:"动态详情页策划设计",U:"条",P:68000,B:"动态详情页策划设计"},
+    {N:"3D 动态主图",U:"年",P:30000,B:"动态详情页策划设计"},
+    {N:"交互式首页模块策划设计（单模块）",U:"模块",P:20000,B:"动态详情页策划设计"}
+  ]},
+  {key:"shooting",name:"素材拍摄",tag:"tag-gray",items:[
+    {N:"实景拍摄 基础拍摄3000-20000元/天",U:"天",P:3000,B:"素材拍摄"},
+    {N:"拍摄-国模",U:"个",P:15000,B:"素材拍摄"}
+  ]},
+  {key:"actor",name:"视频演员出境",tag:"tag-teal",items:[
+    {N:"基础演员1200-5000元/天",U:"天",P:1200,B:"真人演员出镜"}
+  ]},
+  {key:"music",name:"视频 定制化音乐/音效",tag:"tag-blue",items:[
+    {N:"原创音乐定制5000-20000元/首",U:"首",P:5000,B:"视频 定制化音乐/音效"},
+    {N:"商业音乐授权500-2000元/首",U:"首",P:500,B:"视频 定制化音乐/音效"}
+  ]},
+  {key:"clip_edit",name:"视频片断裁剪",tag:"tag-amber",items:[
+    {N:"视频片断裁剪",U:"条",P:5000,B:"视频片断裁剪"}
+  ]},
+  {key:"video_3d",name:"3D视频制作",tag:"tag-coral",items:[
+    {N:"3D视频 （产品动画和功能视频） 15s(无IP)/个",U:"个",P:40000,B:"视频制作"},
+    {N:"3D视频 （产品动画和功能视频）30s(无IP)/个",U:"个",P:70000,B:"视频制作"},
+    {N:"3D动画视频 小场景/秒",U:"秒",P:3000,B:"视频制作"},
+    {N:"3D动画视频 大场景/秒",U:"秒",P:5000,B:"视频制作"},
+    {N:"裸眼3D动画视频 /秒",U:"秒",P:5000,B:"视频制作"},
+    {N:"3D创意视觉制作、3D场景建模",U:"秒",P:2600,B:"3D创意视觉制作、3D场景建模"}
+  ]},
+  {key:"video_ip",name:"IP视频制作",tag:"tag-purple",items:[
+    {N:"IP脚本动画视频（毛发类或特殊布料面层类）/秒",U:"秒",P:6000,B:"视频制作"},
+    {N:"IP脚本动画视频（虚拟人物）/秒",U:"秒",P:8000,B:"视频制作"}
+  ]},
+  {key:"ai_video",name:"AI视频",tag:"tag-blue",items:[
+    {N:"AIGC创想新视觉 首款（45s）",U:"条",P:20000,B:"视频制作"},
+    {N:"AIGC创想新视觉 延伸",U:"条",P:5000,B:"视频制作"},
+    {N:"AI艺人视频--基本版",U:"秒",P:220,B:"AI艺人视频"},
+    {N:"AI艺人视频--进阶版",U:"秒",P:550,B:"AI艺人视频"},
+    {N:"AI产品科普介绍视频",U:"秒",P:220,B:"AI产品科普介绍视频"},
+    {N:"AI产品社媒短视频",U:"秒",P:220,B:"AI产品社媒短视频"},
+    {N:"AI品牌/产品TVC",U:"秒",P:550,B:"AI品牌/产品TVC"}
+  ]},
+  {key:"batch_video",name:"批量产品短视频",tag:"tag-teal",items:[
+    {N:"AI版--批量产品短视频",U:"秒",P:220,B:"批量产品短视频"},
+    {N:"拍摄版--批量产品短视频（100条以上）-30秒/条",U:"条",P:1200,B:"批量产品短视频"},
+    {N:"拍摄版--批量产品短视频（800条以上）-30秒/条",U:"条",P:800,B:"批量产品短视频"}
+  ]},
+  {key:"mark_scene",name:"营销场景设计",tag:"tag-coral",items:[
+    {N:"营销场景设计（简易版）",U:"个",P:10000,B:"营销场景设计"},
+    {N:"营销场景设计",U:"个",P:50000,B:"营销场景设计"}
+  ]},
+  {key:"prod_style",name:"产品造型设计",tag:"tag-amber",items:[
+    {N:"产品造型设计 - 首款",U:"个",P:50000,B:"产品造型设计"},
+    {N:"产品造型设计 - 单品初级延伸",U:"个",P:3000,B:"产品造型设计"},
+    {N:"产品造型设计 - 单品中级级延伸",U:"个",P:5000,B:"产品造型设计"},
+    {N:"产品造型设计 - 单品高级级延伸",U:"个",P:20000,B:"产品造型设计"},
+    {N:"产品结构外观造型设计/套（10款单品以内）",U:"套",P:50000,B:"产品造型设计"},
+    {N:"产品结构外观造型设计-延伸/个",U:"个",P:3000,B:"产品造型设计"},
+    {N:"产品系统策略-产品20个条码以内",U:"个",P:20000,B:"产品造型设计"}
+  ]},
+  {key:"prod_support",name:"产品造型配套设计",tag:"tag-gray",items:[
+    {N:"产品配套设计-试用装延伸设计",U:"款",P:2000,B:"产品造型配套设计"},
+    {N:"产品配套设计-礼盒设计",U:"款",P:5000,B:"产品造型配套设计"},
+    {N:"产品配套设计-手提袋设计",U:"款",P:1500,B:"产品造型配套设计"},
+    {N:"产品配套设计-纸箱设计",U:"款",P:1000,B:"产品造型配套设计"},
+    {N:"产品配套设计-产品背景效果图",U:"张",P:800,B:"产品造型配套设计"}
+  ]},
+  {key:"ip_design",name:"IP设计",tag:"tag-purple",items:[
+    {N:"2D IP设计",U:"款",P:18000,B:"IP设计"},
+    {N:"3D IP 常规基础款",U:"款",P:40000,B:"IP设计"},
+    {N:"3D IP 复杂毛发款",U:"款",P:60000,B:"IP设计"},
+    {N:"3D IP 真人模拟款",U:"款",P:100000,B:"IP设计"}
+  ]},
+  {key:"ip_support",name:"IP 配套设计",tag:"tag-blue",items:[
+    {N:"2D IP设计 延伸（不限动作）/款",U:"款",P:4000,B:"IP 配套设计"},
+    {N:"2D IP 六面图/套",U:"套",P:5000,B:"IP 配套设计"},
+    {N:"2D IP 平面表情包/套（16个/专辑）",U:"套",P:35000,B:"IP 配套设计"},
+    {N:"IP 动作(表情）延伸-3D -基础",U:"款",P:4000,B:"IP 配套设计"},
+    {N:"IP 动作(表情）延伸-3D 复杂",U:"款",P:10000,B:"IP 配套设计"},
+    {N:"辅助IP-适用于视频独立IP打造，若需要辅助IP（2-5w）",U:"款",P:20000,B:"IP 配套设计"},
+    {N:"3D IP  表情包（16个/专辑）",U:"个",P:60000,B:"IP 配套设计"},
+    {N:"3D IP  表情包（24个/专辑）",U:"个",P:80000,B:"IP 配套设计"}
+  ]},
+  {key:"material",name:"物料设计",tag:"tag-amber",items:[
+    {N:"物料原创设计 海报 | 易拉宝 | X展架 | 堆头 | 展示架 | 促销台 | 车身广告 | 促销场景 | 户外形象广告 | 灯箱 | 店招设计 | 形象墙",U:"款",P:5000,B:"物料设计"},
+    {N:"物料平面设计 海报 | 易拉宝 | X展架 | 堆头 | 展示架 | 促销台 | 车身广告 | 促销场景 | 户外形象广告 | 灯箱 | 店招设计 | 形象墙",U:"款",P:3000,B:"物料设计"},
+    {N:"包柱 | 展示架 | 店招广告 | 工服 | 手提袋设计 | 产品挂板 | 帐篷 | 遮阳伞 | DM单 | 遮阳伞 | 包柱 | 授权牌 | 形象背景板",U:"款",P:1500,B:"物料设计"},
+    {N:"价格牌 | 吊旗 | 地贴 | 货架贴 | 会员卡 | 名片 | 跳跳卡 | 气球 | 授权书 | ＰＯＰ吊旗",U:"款",P:1000,B:"物料设计"},
+    {N:"刊物-画册文案撰写和规划/本（8-20P以内）",U:"本",P:5000,B:"物料设计 - 手册类"},
+    {N:"刊物-企业画册/产品手册/折页设计/P",U:"页",P:800,B:"物料设计 - 手册类"}
+  ]},
+  {key:"website",name:"网站设计",tag:"tag-teal",items:[
+    {N:"官网设计/款，特殊根据客户实际需求在报价",U:"款",P:30000,B:"网站设计"},
+    {N:"官网设计-首页/款",U:"款",P:20000,B:"网站设计"},
+    {N:"官网设计-内页/款",U:"款",P:12000,B:"网站设计"},
+    {N:"官网设计首页轮播海报/款",U:"款",P:5000,B:"网站设计"}
+  ]}
+];
+
+// ===== STATE =====
+var states={}, tab='all', catFilter=null;
+var gTaxOn=true, gFeeOn=false, gDiscOn=false;
+
+function esc(s){
+  var d=document.createElement('div');
+  d.textContent=s;
+  return d.innerHTML;
+}
+
+function fmt(n){
+  if(n===0||isNaN(n))return '¥0';
+  var s=Math.abs(n).toLocaleString('zh-CN',{minimumFractionDigits:n%1===0?0:2,maximumFractionDigits:2});
+  return (n<0?'-':'')+'¥'+s;
+}
+
+function fnum(n){
+  if(n===0||isNaN(n))return '0';
+  return n.toLocaleString('zh-CN',{minimumFractionDigits:n%1===0?0:2,maximumFractionDigits:2});
+}
+
+// ===== CALC =====
+function calc(P,qty,tax,fee,disc){
+  var tr=gTaxOn?(tax||0):0;
+  var fr=gFeeOn?(fee||0):0;
+  var dr=gDiscOn?(disc||0):0;
+  var sub=P*(qty||1);
+  var t=sub*(tr/100);
+  var withTax=sub+t;
+  var f=withTax*(fr/100);
+  var withFee=withTax+f;
+  var d=withFee*(dr/100);
+  var grand=withFee-d;
+  return {
+    sub:sub, taxAmt:t, taxRate:tr, feeAmt:f, feeRate:fr, discAmt:d, discRate:dr,
+    grand:grand, unit:qty>0?grand/qty:0
+  };
+}
+
+function defTax(){return parseFloat(document.getElementById('defTax').value)||6}
+function defFee(){return parseFloat(document.getElementById('defFee').value)||2}
+function defDisc(){return parseFloat(document.getElementById('defDiscount').value)||0}
+
+function applyDefaults(){
+  var dTax=defTax(), dFee=defFee(), dDisc=defDisc();
+  Object.keys(states).forEach(function(k){
+    if(!states[k].sel)return;
+    if(gTaxOn)states[k].tax=dTax;
+    if(gFeeOn)states[k].fee=dFee;
+    if(gDiscOn)states[k].disc=dDisc;
+  });
+  render();
+}
+
+function toggleTax(){
+  gTaxOn=!gTaxOn;
+  document.getElementById('tgTax').classList.toggle('off',!gTaxOn);
+  document.getElementById('tgTax').querySelector('.tog-pill').classList.toggle('on',gTaxOn);
+  document.getElementById('defTax').classList.toggle('disabled',!gTaxOn);
+  render();
+}
+function toggleFee(){
+  gFeeOn=!gFeeOn;
+  document.getElementById('tgFee').classList.toggle('off',!gFeeOn);
+  document.getElementById('tgFee').querySelector('.tog-pill').classList.toggle('on',gFeeOn);
+  document.getElementById('defFee').classList.toggle('disabled',!gFeeOn);
+  render();
+}
+function toggleDisc(){
+  gDiscOn=!gDiscOn;
+  document.getElementById('tgDisc').classList.toggle('off',!gDiscOn);
+  document.getElementById('tgDisc').querySelector('.tog-pill').classList.toggle('on',gDiscOn);
+  document.getElementById('defDiscount').classList.toggle('disabled',!gDiscOn);
+  render();
+}
+function onRateChange(){render();}
+
+function clearAll(){
+  states={};
+  render();
+}
+
+function switchTab(t){
+  tab=t;
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active')});
+  document.querySelector('.tab[data-tab="'+t+'"]').classList.add('active');
+  document.getElementById('searchWrap').style.display=t==='all'?'':'none';
+  document.getElementById('catChipsW').style.display=t==='all'?'':'none';
+  render();
+}
+
+function setFilter(key){
+  catFilter=key;
+  document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active')});
+  var chip=document.querySelector('.cat-chip[data-cat="'+(key||'')+'"]');
+  if(chip)chip.classList.add('active');
+  render();
+}
+
+// ===== RENDER CAT CHIPS =====
+function renderChips(){
+  var h='<div class="cat-chip active" data-cat="" onclick="setFilter(null)">全部</div>';
+  CATEGORIES.forEach(function(cat){
+    var cnt=0;
+    cat.items.forEach(function(it,ii){
+      var k=cat.key+'-'+ii;
+      if(states[k]&&states[k].sel)cnt++;
+    });
+    h+='<div class="cat-chip" data-cat="'+cat.key+'" onclick="setFilter(\''+cat.key+'\')">'+esc(cat.name)+(cnt>0?' <small>'+cnt+'</small>':'')+'</div>';
+  });
+  document.getElementById('catChipsW').innerHTML=h;
+}
+
+// ===== RENDER =====
+function render(){
+  renderChips();
+  var cont=document.getElementById('main');
+  var q=document.getElementById('searchInp').value.toLowerCase().trim();
+  var showAll=(tab==='all'&&!q&&!catFilter);
+
+  // Tab: selected only
+  if(tab==='sel'){
+    var selItems=[];
+    CATEGORIES.forEach(function(cat,ci){
+      cat.items.forEach(function(it,ii){
+        var k=cat.key+'-'+ii;
+        if(states[k]&&states[k].sel)selItems.push({cat:cat,ci:ci,ii:ii,item:it,key:k});
+      });
+    });
+    cont.innerHTML=renderSelList(selItems);
+    updateSum();
+    return;
+  }
+
+  // Tab: all - filter
+  if(showAll){
+    // Full category layout
+    var h='';
+    CATEGORIES.forEach(function(cat){
+      var selCnt=0;
+      cat.items.forEach(function(it,ii){if(states[cat.key+'-'+ii]&&states[cat.key+'-'+ii].sel)selCnt++;});
+      h+='<div class="section" data-cat="'+cat.key+'">';
+      h+='<div class="sec-head" onclick="togSec(this,\''+cat.key+'\')">';
+      h+='<div class="sec-head-left"><span class="sec-tag '+cat.tag+'">'+esc(cat.name)+'</span><span class="sec-title">'+esc(cat.name)+'</span>';
+      if(selCnt>0)h+='<span class="sec-count">已选'+selCnt+'项</span>';
+      h+='</div><span class="sec-arrow">▼</span></div>';
+      h+='<div class="sec-content" id="sec-'+cat.key+'">';
+      h+=renderItems(cat);
+      h+='</div></div>';
+    });
+    cont.innerHTML=h;
+    updateSum();
+    return;
+  }
+
+  // Filtered view
+  var h2='';
+  CATEGORIES.forEach(function(cat){
+    if(catFilter&&cat.key!==catFilter)return;
+    var items=cat.items.filter(function(it){return !q||it.N.toLowerCase().indexOf(q)>-1||cat.name.toLowerCase().indexOf(q)>-1||(it.B||'').toLowerCase().indexOf(q)>-1;});
+    if(!items.length)return;
+    h2+='<div class="section">';
+    h2+='<div class="sec-head" onclick="togSec(this,\''+cat.key+'\')">';
+    h2+='<div class="sec-head-left"><span class="sec-tag '+cat.tag+'">'+esc(cat.name)+'</span><span class="sec-title">'+esc(cat.name)+'</span>';
+    h2+='</div><span class="sec-arrow">▼</span></div>';
+    h2+='<div class="sec-content" id="sec-'+cat.key+'">';
+    h2+=renderItems(cat,items);
+    h2+='</div></div>';
+  });
+  cont.innerHTML=h2||'<div class="empty"><p>未找到匹配的项目</p></div>';
+  updateSum();
+}
+
+function renderItems(cat,filtered){
+  var items=filtered||cat.items;
+  var h='';
+  items.forEach(function(it){
+    var realIdx=cat.items.indexOf(it);
+    var k=cat.key+'-'+realIdx;
+    var s=states[k]||{sel:false,qty:1,tax:defTax(),fee:defFee(),disc:defDisc()};
+    var r=calc(it.P,s.qty,s.tax,s.fee,s.disc);
+
+    h+='<div class="item'+(s.sel?' sel':'')+'" id="card-'+k+'" onclick="cardClick(\''+k+'\',event)">';
+    h+='<div class="item-plus"></div>';
+    h+='<div class="item-check"><svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+    h+='<div class="item-info"><div class="item-name">'+esc(it.N)+'</div>';
+    if(it.B&&it.B!==cat.name)h+='<div class="item-meta">'+esc(it.B)+'</div>';
+    else if(it.U)h+='<div class="item-meta">单位: '+esc(it.U)+'</div>';
+    h+='</div>';
+    h+='<div class="item-price"><div class="item-price-num">'+fnum(it.P)+'</div><div class="item-price-unit">'+esc(it.U)+'</div></div>';
+
+    h+='<div class="item-xpand" onclick="event.stopPropagation()">';
+    h+='<div class="ctrls">';
+    h+='<div class="ctrl"><label>数量</label><input type="number" class="num-input" value="'+s.qty+'" min="0.1" step="any" onchange="upd(\''+k+'\',\'qty\',this.value)" oninput="upd(\''+k+'\',\'qty\',this.value)"></div>';
+    h+='<div class="ctrl"><label>税率%</label><input type="number" class="num-input'+(!gTaxOn?' off-input':'')+'" '+(!gTaxOn?'disabled':'')+' value="'+(gTaxOn?s.tax:0)+'" step="0.01" min="0" onchange="upd(\''+k+'\',\'tax\',this.value)" oninput="upd(\''+k+'\',\'tax\',this.value)"></div>';
+    h+='<div class="ctrl"><label>手续费%</label><input type="number" class="num-input'+(!gFeeOn?' off-input':'')+'" '+(!gFeeOn?'disabled':'')+' value="'+(gFeeOn?s.fee:0)+'" step="0.01" min="0" onchange="upd(\''+k+'\',\'fee\',this.value)" oninput="upd(\''+k+'\',\'fee\',this.value)"></div>';
+    h+='<div class="ctrl"><label>折扣%</label><input type="number" class="num-input'+(!gDiscOn?' off-input':'')+'" '+(!gDiscOn?'disabled':'')+' value="'+(gDiscOn?s.disc:0)+'" step="0.01" min="0" max="100" onchange="upd(\''+k+'\',\'disc\',this.value)" oninput="upd(\''+k+'\',\'disc\',this.value)"></div>';
+    h+='</div>';
+    h+='<div class="results">';
+    h+='<div><span class="rl">小计</span><div class="rv">'+fmt(r.sub)+'</div></div>';
+    h+='<div><span class="rl">税额'+(gTaxOn?' (+'+r.taxRate+'%)':' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="'+(!gTaxOn?'color:var(--sub);font-weight:400':'')+'">'+(gTaxOn?'+'+fmt(r.taxAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">手续费'+(gFeeOn?' (+'+r.feeRate+'%)':' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="'+(!gFeeOn?'color:var(--sub);font-weight:400':'')+'">'+(gFeeOn?'+'+fmt(r.feeAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">折扣'+(gDiscOn?(' ('+r.discRate+'%)'):' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="color:'+(gDiscOn?'var(--coral)':'var(--sub)')+';font-weight:'+(gDiscOn?'600':'400')+'">'+(gDiscOn?'-'+fmt(r.discAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">最终单价</span><div class="rv">'+(r.unit>0?fmt(r.unit)+'/'+esc(it.U):'-')+'</div></div>';
+    h+='<div><span class="rl">该项总价</span><div class="rv rv-total">'+fmt(r.grand)+'</div></div>';
+    h+='</div>';
+    h+='<div class="rmv"><span onclick="toggleKey(\''+k+'\')">✕ 移除</span></div>';
+    h+='</div>';
+
+    h+='</div>';
+  });
+  return h;
+}
+
+function renderSelList(items){
+  if(!items.length)return '<div class="empty"><p>尚未选择任何服务项目<br>切换到「全部服务」选择</p></div>';
+  var curCat=null, h='';
+  items.forEach(function(x){
+    if(curCat!==x.cat.key){
+      if(curCat)h+='</div>';
+      h+='<div class="section"><div class="sec-head"><div class="sec-head-left"><span class="sec-tag '+x.cat.tag+'">'+esc(x.cat.name)+'</span><span class="sec-title">'+esc(x.cat.name)+'</span></div></div>';
+      h+='<div class="sec-content" id="sec-'+x.cat.key+'">';
+      curCat=x.cat.key;
+    }
+    var it=x.item, k=x.key;
+    var s=states[k]||{sel:true,qty:1,tax:defTax(),fee:defFee(),disc:defDisc()};
+    var r=calc(it.P,s.qty,s.tax,s.fee,s.disc);
+
+    h+='<div class="item sel" id="card-'+k+'" onclick="cardClick(\''+k+'\',event)">';
+    h+='<div class="item-check"><svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+    h+='<div class="item-info"><div class="item-name">'+esc(it.N)+'</div>';
+    if(it.U)h+='<div class="item-meta">单位: '+esc(it.U)+'</div>';
+    h+='</div>';
+    h+='<div class="item-price"><div class="item-price-num">'+fnum(it.P)+'</div><div class="item-price-unit">'+esc(it.U)+'</div></div>';
+    h+='<div class="item-xpand" onclick="event.stopPropagation()">';
+    h+='<div class="ctrls">';
+    h+='<div class="ctrl"><label>数量</label><input type="number" class="num-input" value="'+s.qty+'" min="0.1" step="any" onchange="upd(\''+k+'\',\'qty\',this.value)" oninput="upd(\''+k+'\',\'qty\',this.value)"></div>';
+    h+='<div class="ctrl"><label>税率%</label><input type="number" class="num-input'+(!gTaxOn?' off-input':'')+'" '+(!gTaxOn?'disabled':'')+' value="'+(gTaxOn?s.tax:0)+'" step="0.01" min="0" onchange="upd(\''+k+'\',\'tax\',this.value)" oninput="upd(\''+k+'\',\'tax\',this.value)"></div>';
+    h+='<div class="ctrl"><label>手续费%</label><input type="number" class="num-input'+(!gFeeOn?' off-input':'')+'" '+(!gFeeOn?'disabled':'')+' value="'+(gFeeOn?s.fee:0)+'" step="0.01" min="0" onchange="upd(\''+k+'\',\'fee\',this.value)" oninput="upd(\''+k+'\',\'fee\',this.value)"></div>';
+    h+='<div class="ctrl"><label>折扣%</label><input type="number" class="num-input'+(!gDiscOn?' off-input':'')+'" '+(!gDiscOn?'disabled':'')+' value="'+(gDiscOn?s.disc:0)+'" step="0.01" min="0" max="100" onchange="upd(\''+k+'\',\'disc\',this.value)" oninput="upd(\''+k+'\',\'disc\',this.value)"></div>';
+    h+='</div>';
+    h+='<div class="results">';
+    h+='<div><span class="rl">小计</span><div class="rv">'+fmt(r.sub)+'</div></div>';
+    h+='<div><span class="rl">税额'+(gTaxOn?' (+'+r.taxRate+'%)':' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="'+(!gTaxOn?'color:var(--sub);font-weight:400':'')+'">'+(gTaxOn?'+'+fmt(r.taxAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">手续费'+(gFeeOn?' (+'+r.feeRate+'%)':' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="'+(!gFeeOn?'color:var(--sub);font-weight:400':'')+'">'+(gFeeOn?'+'+fmt(r.feeAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">折扣'+(gDiscOn?(' ('+r.discRate+'%)'):' <span style="color:var(--coral)">已关闭</span>')+'</span><div class="rv" style="color:'+(gDiscOn?'var(--coral)':'var(--sub)')+';font-weight:'+(gDiscOn?'600':'400')+'">'+(gDiscOn?'-'+fmt(r.discAmt):'—')+'</div></div>';
+    h+='<div><span class="rl">最终单价</span><div class="rv">'+(r.unit>0?fmt(r.unit)+'/'+esc(it.U):'-')+'</div></div>';
+    h+='<div><span class="rl">该项总价</span><div class="rv rv-total">'+fmt(r.grand)+'</div></div>';
+    h+='</div>';
+    h+='<div class="rmv"><span onclick="toggleKey(\''+k+'\')">✕ 移除</span></div>';
+    h+='</div></div>';
+  });
+  h+='</div>';
+  return h;
+}
+
+// ===== ACTIONS =====
+function cardClick(k,e){
+  if(e.target.closest('.item-xpand')||e.target.closest('.ctrls')||e.target.closest('.rmv'))return;
+  toggleKey(k);
+}
+
+function toggleKey(k){
+  if(!states[k])states[k]={sel:false,qty:1,tax:defTax(),fee:defFee(),disc:defDisc()};
+  states[k].sel=!states[k].sel;
+  render();
+}
+
+function upd(k,field,val){
+  if(!states[k])return;
+  var v=parseFloat(val);
+  if(isNaN(v))return;
+  states[k][field]=v;
+  render();
+}
+
+function togSec(el,key){
+  el.classList.toggle('collapsed');
+  var c=document.getElementById('sec-'+key);
+  if(c)c.classList.toggle('collapsed');
+}
+
+// ===== SUMMARY =====
+function updateSum(){
+  var cnt=0,sub=0,tax=0,fee=0,disc=0,grand=0;
+  CATEGORIES.forEach(function(cat,ci){
+    cat.items.forEach(function(it,ii){
+      var k=cat.key+'-'+ii;
+      if(!states[k]||!states[k].sel)return;
+      var s=states[k];
+      var r=calc(it.P,s.qty||1,s.tax||0,s.fee||0,s.disc||0);
+      cnt++;sub+=r.sub;tax+=r.taxAmt;fee+=r.feeAmt;disc+=r.discAmt;grand+=r.grand;
+    });
+  });
+  document.getElementById('scnt').textContent=cnt;
+  document.getElementById('sgrand').textContent=fmt(grand);
+  document.getElementById('ssub').textContent=fmt(sub);
+  document.getElementById('stax').textContent=fmt(tax);
+  document.getElementById('sfee').textContent=fmt(fee);
+  document.getElementById('sdisc').textContent='-'+fmt(disc);
+  document.getElementById('tabBadge').textContent=cnt;
+}
+
+// ===== SEARCH =====
+document.getElementById('searchInp').addEventListener('input',function(){render()});
+
+// ===== INIT =====
+if(!gFeeOn){
+  document.getElementById('tgFee').classList.add('off');
+  document.getElementById('tgFee').querySelector('.tog-pill').classList.remove('on');
+  document.getElementById('defFee').classList.add('disabled');
+}
+if(!gDiscOn){
+  document.getElementById('tgDisc').classList.add('off');
+  document.getElementById('tgDisc').querySelector('.tog-pill').classList.remove('on');
+  document.getElementById('defDiscount').classList.add('disabled');
+}
+render();
+</script>
+</body>
+</html>
